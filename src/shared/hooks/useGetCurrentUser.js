@@ -18,7 +18,6 @@ export const useGetCurrentUser = () => {
           },
         }
       );
-      console.log(res);
       setuser(res.data);
     } catch (error) {
       console.log(error);

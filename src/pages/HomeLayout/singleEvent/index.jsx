@@ -66,80 +66,80 @@ const SingleEvent = () => {
   const isOrganizer = user && user._id === event.organizer?._id;
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-900 shadow-lg rounded-lg mt-10 transition-all duration-300">
-      {event.coverImage && (
-        <motion.img
-          src={event.coverImage}
-          alt={event.title}
-          className="w-full h-64 sm:h-80 object-cover rounded-lg shadow-md"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        />
-      )}
-
-      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mt-4 leading-tight break-all">
+    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-900 shadow-xl rounded-2xl mt-10 transition-all duration-300 space-y-6">
+    {event.image && (
+      <motion.img
+        src={event.image}
+        alt={event.title}
+        className="w-full max-h-[500px] object-contain rounded-xl shadow-lg"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+      />
+    )}
+  
+    <div className="space-y-2">
+      <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-snug break-words">
         {event.title}
       </h1>
-
-      <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
-        Organized by {event.organizer?.firstName} {event.organizer?.lastName} • {" "}
-        {event.date ? new Date(event.date).toLocaleDateString() : "Date not available"}
+  
+      <p className="text-base sm:text-lg font-medium text-gray-700 dark:text-gray-300">
+        <span className="font-semibold text-gray-900 dark:text-white">
+          {event.organizer?.firstName} {event.organizer?.lastName}
+        </span>{" "}
+        • {event.date ? new Date(event.date).toLocaleDateString() : "Date not available"}
       </p>
-
-      <div className="mt-4">
-        <span className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded">
+  
+      <div>
+        <span className="inline-block px-4 py-1 bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm font-bold rounded-full">
           {event.category || "Uncategorized"}
         </span>
       </div>
-
-      <p className="mt-4 text-gray-700 dark:text-gray-300 leading-relaxed text-lg break-all">
-        {event.description || "No description available."}
-      </p>
-
-      {event.tags && event.tags.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {event.tags.map((tag, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm rounded"
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-6 flex justify-between items-center text-gray-600 dark:text-gray-400 text-sm">
-        <span>👍 {event.likes || 0} Likes</span>
-      </div>
-
-      {/* Edit & Delete or Buy Ticket Buttons */}
-      <div className="mt-6 flex gap-4">
-        {isOrganizer ? (
-          <>
-            <button
-              onClick={() => navigate(`/event/${eventId}/edit`)}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all transform hover:scale-105"
-            >
-              Edit Event
-            </button>
-            <button
-              onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all transform hover:scale-105"
-            >
-              Delete Event
-            </button>
-          </>
-        ) : (
-          <button
-            className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all transform hover:scale-105"
-          >
-            Buy Ticket
-          </button>
-        )}
-      </div>
     </div>
+  
+    <p className="text-lg sm:text-xl font-medium text-gray-800 dark:text-gray-200 leading-relaxed break-words">
+      {event.description || "No description available."}
+    </p>
+  
+    {event.tags?.length > 0 && (
+      <div className="flex flex-wrap gap-2">
+        {event.tags.map((tag, index) => (
+          <span
+            key={index}
+            className="px-3 py-1 bg-blue-200 dark:bg-blue-900 text-blue-900 dark:text-blue-100 text-sm font-semibold rounded-full"
+          >
+            #{tag}
+          </span>
+        ))}
+      </div>
+    )}
+  
+    <div className="flex gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+      {isOrganizer ? (
+        <>
+          <button
+            onClick={() => navigate(`/event/${eventId}/edit`)}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base py-2 px-5 rounded-lg shadow-md transition hover:scale-105"
+          >
+            Edit Event
+          </button>
+          <button
+            onClick={handleDelete}
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold text-base py-2 px-5 rounded-lg shadow-md transition hover:scale-105"
+          >
+            Delete Event
+          </button>
+        </>
+      ) : (
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white font-semibold text-base py-2 px-5 rounded-lg shadow-md transition hover:scale-105"
+        >
+          Buy Ticket
+        </button>
+      )}
+    </div>
+  </div>
+  
   );
 };
 

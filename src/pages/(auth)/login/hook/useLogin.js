@@ -21,13 +21,9 @@ export const useLogin = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log(formData);
-
     try {
       const url = "http://localhost:4050/api/v1/users/login";
       const response = await axios.post(url, formData);
-      console.log(response, "response");
       localStorage.setItem("token", response.data.token);
 
       if (response.data) {

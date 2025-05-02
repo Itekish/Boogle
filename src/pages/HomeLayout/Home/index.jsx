@@ -65,10 +65,10 @@ const Home = () => {
               className="relative bg-white/30 dark:bg-gray-900/60 backdrop-blur-lg shadow-lg rounded-2xl p-6 border border-gray-500 dark:border-gray-700 transition-all duration-300 hover:shadow-neon"
             >
               {/* 🔥 Event Image */}
-              {event.coverImage && (
+              {event.image && (
                 <Link to={`/event/${event._id}`}>
                   <motion.img
-                    src={event.coverImage}
+                    src={event.image}
                     alt={event.title}
                     className="w-full h-52 object-cover rounded-lg shadow-md transition-transform duration-300 hover:scale-105"
                     whileHover={{ scale: 1.1 }}

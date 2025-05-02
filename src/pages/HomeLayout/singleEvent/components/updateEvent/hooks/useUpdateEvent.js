@@ -1,81 +1,133 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useGetCurrentUser } from "../../../../../../shared/hooks/useGetCurrentUser";
+import { toast } from "react-toastify";
 
 export const useUpdateEvent = (eventId, initialData = {}) => {
-  const { user } = useGetCurrentUser();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true); // Initial loading state for pre-fetching
+  const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState(initialData);
+  const [categories] = useState([
+    "Conference","Workshop","Concert","Meetup","Sports",
+    "Festival","Networking","Seminar","Webinar","Exhibition","Other",
+  ]);
+  const [dirty, setDirty] = useState(false);
+  const initialRef = useRef(null);
 
-  // Fetch event data when the hook mounts
   useEffect(() => {
-    const fetchEventData = async () => {
+    const fetchEvent = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("Unauthorized: Please log in first.");
-        }
-
-        const response = await axios.get(`http://localhost:4050/api/v1/events/${eventId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error('Unauthorized');
+        const { data } = await axios.get(`http://localhost:4050/api/v1/events/${eventId}`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-
-        console.log(response,"this is it");
-        
-
-        setFormData(response.data); // Pre-fill form with fetched event data
-      } catch (fetchError) {
-        console.error("Error fetching event data:", fetchError);
-        setError(fetchError.response?.data?.error || "Failed to load event data.");
+        setFormData(data);
+        initialRef.current = data;
+      } catch (e) {
+        toast.error(e.response?.data?.error || e.message);
+        setError(e.message);
       } finally {
         setIsLoading(false);
       }
     };
-
-    fetchEventData();
+    fetchEvent();
   }, [eventId]);
 
+  useEffect(() => {
+    if (!initialRef.current) return;
+    const clean = (obj) => ({ ...obj, image: undefined });
+    setDirty(JSON.stringify(clean(formData)) !== JSON.stringify(clean(initialRef.current)));
+  }, [formData]);
+
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    const { name, type, checked, files, value } = e.target;
+    setDirty(true);
+
+    if (type === 'file') {
+      setFormData((prev) => ({ ...prev, [name]: files[0] }));
+      return;
+    }
+
+    const ticketMatch = name.match(/^tickets\[(\d+)\]\.(\w+)$/);
+    if (ticketMatch) {
+      const [ , idx, key ] = ticketMatch;
+      setFormData((prev) => {
+        const tickets = [...(prev.tickets || [])];
+        tickets[idx] = {
+          ...tickets[idx],
+          [key]: (key === 'price' || key === 'quantity') ? Number(value) : value
+        };
+        return { ...prev, tickets };
+      });
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
+
+  const addTicket = () => {
+    setFormData((prev) => ({
+      ...prev,
+      tickets: [...(prev.tickets || []), { type: '', price: 0, quantity: 0 }],
+    }));
+    setDirty(true);
+  };
+
+  const removeTicket = (i) => {
+    setFormData((prev) => ({
+      ...prev,
+      tickets: prev.tickets.filter((_, idx) => idx !== i),
+    }));
+    setDirty(true);
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
-    setError(null);
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Unauthorized: Please log in first.");
-      setIsUpdating(false);
-      return;
-    }
-
     try {
-      const response = await axios.patch(`http://localhost:4050/api/v1/events/${eventId}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('Unauthorized');
 
-      if (response.data) {
-        alert("Event updated successfully!");
-        navigate("/dashboard"); // Redirect after successful update
-      }
-    } catch (updateError) {
-      console.error("Error updating event:", updateError);
-      setError(updateError.response?.data?.error || "Something went wrong while updating.");
+      // Extract and normalize organizer, omit attendees entirely
+      const { organizer, attendees, ...rest } = formData;
+      const organizerId = typeof organizer === 'object' ? organizer._id : organizer;
+
+      const payload = new FormData();
+      // append other form fields
+      Object.entries(rest).forEach(([key, val]) => {
+        if (key === 'tickets') {
+          payload.append(key, JSON.stringify(val));
+        } else if (key === 'image' && val instanceof File) {
+          payload.append(key, val);
+        } else {
+          payload.append(key, val);
+        }
+      });
+      // append only organizer id
+      if (organizerId) payload.append('organizer', organizerId);
+
+      await axios.patch(
+        `http://localhost:4050/api/v1/events/${eventId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      toast.success('Event updated successfully');
+      navigate('/dashboard');
+    } catch (err) {
+      toast.error(err.response?.data?.error || err.message);
+      setError(err.message);
     } finally {
       setIsUpdating(false);
     }
@@ -83,10 +135,14 @@ export const useUpdateEvent = (eventId, initialData = {}) => {
 
   return {
     formData,
-    handleChange,
-    handleUpdate,
+    categories,
     isLoading,
     isUpdating,
     error,
+    handleChange,
+    handleUpdate,
+    addTicket,
+    removeTicket,
+    dirty,
   };
 };

@@ -12,7 +12,7 @@ const ThemeToggle = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
-    localStorage.setItem("theme", theme);
+    localStorage.setItem("theme", theme); 
   }, [theme]);
 
   return (

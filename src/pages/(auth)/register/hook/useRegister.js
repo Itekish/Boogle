@@ -30,12 +30,9 @@ export const useRegister = () => {
       return;
     }
 
-    console.log(formData);
-
     try {
       const url = "http://localhost:4050/api/v1/users/register";
       const response = await axios.post(url, formData);
-      console.log(response, "response");
       localStorage.setItem("token", response.data.token);
 
       if (response.data) {

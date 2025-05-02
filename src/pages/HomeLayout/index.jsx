@@ -13,7 +13,7 @@ const HomeLayout = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner />
-      </div>
+      </div>  
     );
   }
 
@@ -21,13 +21,14 @@ const HomeLayout = () => {
     <div>
       {/* 🔥 Glassy Dark Navbar */}
       <nav className="fixed top-0 left-0 w-full bg-black/30 backdrop-blur-lg shadow-md border-b border-gray-700 dark:bg-gray-900/50 px-6 flex justify-between items-center z-50">
-        <div className="flex items-center">
+       <Link to="/">
+       <div className="flex items-center">
           <img src={boogleLogo} alt="Boogle Logo" className="h-20" />
           <h1 className=" text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ff4d6d] via-[#ffcc33] to-[#0099ff] drop-shadow-lg" style={{ textShadow: "2px 2px 5px rgba(255, 77, 109, 0.7)" }}>
             Boogle
           </h1>
         </div>
-        
+       </Link>  
         {/* 🔥 Desktop Navigation */}
         <ul className="hidden md:flex gap-6 text-white font-bold text-[20px]">
           <li className="py-2"><Link to="/" className="hover:text-[#ff4d6d] transition-all">Home</Link></li>
