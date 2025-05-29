@@ -8,6 +8,7 @@ import HomeLayout from "./pages/HomeLayout";
 import CreateEvent from "./pages/HomeLayout/CreateEvent";
 import SingleEvent from "./pages/HomeLayout/singleEvent";
 import UpdateEventForm from "./pages/HomeLayout/singleEvent/components/updateEvent";
+import BuyEventTicket from "./pages/HomeLayout/singleEvent/BuyEventTicket"
 const App = () => {
   return (
     <Routes>
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="event/:eventId" element={<SingleEvent />} />         
         <Route path="event/:eventId/edit" element={<UpdateEventForm/>} />         
         <Route path="*" element={<h1>Page not found</h1>} />
+        <Route path="/event/:eventId/buyTicket" element={<BuyEventTicket />} />
       </Route>
 
       <Route path="/dashboard" element={<Dashboard />} />

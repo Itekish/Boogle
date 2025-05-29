@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Spinner from "../../../components/Spinner";
 import { motion } from "framer-motion";
+import HeroSection from "./components/heroSection";
 
 const Home = () => {
   const [events, setEvents] = useState([]);
@@ -31,7 +32,8 @@ const Home = () => {
   );
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-[#282c36] via-[#1e222a] to-[#12141c] dark:from-gray-900 dark:to-gray-800 px-6 py-10 transition-colors duration-300">
+    <div className="relative min-h-screen w-full flex flex-col items-center justify-start bg-gradient-to-br from-[#282c36] via-[#1e222a] to-[#12141c] dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
+      
       {/* 🔥 Animated Header */}
       <motion.h1
         initial={{ scale: 0.8, opacity: 0 }}
@@ -46,7 +48,7 @@ const Home = () => {
       <motion.input
         type="text"
         placeholder="Search for events..."
-        className="w-full max-w-md px-6 py-3 border-none rounded-full shadow-lg text-gray-900 dark:text-white bg-white dark:bg-gray-800 text-lg placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-[#ff4d6d] transition-all"
+        className="w-full max-w-md px-6 py-3 border-none rounded-full shadow-lg text-gray-900 dark:text-white bg-white dark:bg-gray-800 text-lg placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-[#ff4d6d] transition-all mb-6"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         whileFocus={{ scale: 1.05, boxShadow: "0px 0px 20px #ff4d6d" }}
@@ -57,7 +59,7 @@ const Home = () => {
       ) : filteredEvents.length === 0 ? (
         <p className="text-center text-gray-100 dark:text-white text-lg mt-6">No events found 😔</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl px-4 mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl mt-4 px-4 sm:px-6 lg:px-8">
           {filteredEvents.map((event) => (
             <motion.div
               key={event._id}
